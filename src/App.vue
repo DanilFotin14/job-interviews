@@ -23,10 +23,12 @@ onMounted(() => {
 <template>
   <app-progress v-if="isLoading" />
   <div v-else class="container">
-    <AppHeader />
-    <div class="content">
+    <header>
+      <AppHeader />
+    </header>
+    <main>
       <RouterView />
-    </div>
+    </main>
   </div>
 </template>
 
@@ -35,5 +37,6 @@ onMounted(() => {
   margin: 0 auto;
   max-width: 1200px;
   padding: 20px;
+  box-sizing: border-box;
 }
 </style>

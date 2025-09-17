@@ -46,7 +46,7 @@ const disabledSaveButton = computed<boolean>(() => {
 })
 </script>
 <template>
-  <div class="content-interview">
+  <section class="content-interview">
     <app-card>
       <template #title>New Interview</template>
       <template #content>
@@ -76,7 +76,7 @@ const disabledSaveButton = computed<boolean>(() => {
         ></app-button>
       </template>
     </app-card>
-  </div>
+  </section>
 </template>
 
 <style scoped>
@@ -84,7 +84,40 @@ const disabledSaveButton = computed<boolean>(() => {
   width: 100%;
 }
 .content-interview {
-  max-width: 600px;
-  margin: auto;
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  padding: 2rem;
+  margin: 2rem auto;
+}
+
+.p-card {
+  background: transparent;
+  box-shadow: none;
+}
+
+h1,
+h2,
+h3 {
+  color: #333;
+  font-weight: 600;
+}
+@media (max-width: 900px) {
+  .content-interview {
+    max-width: 95vw;
+    padding: 1rem;
+  }
+}
+@media (max-width: 600px) {
+  .content-interview {
+    max-width: 100vw;
+    padding: 0.5rem;
+    margin: 1rem 0;
+  }
+  h1,
+  h2,
+  h3 {
+    font-size: 1.1rem;
+  }
 }
 </style>

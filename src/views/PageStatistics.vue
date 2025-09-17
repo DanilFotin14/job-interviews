@@ -1,15 +1,3 @@
-<template>
-  <h1>Statistics</h1>
-  <div class="card flex justify-content-center">
-    <app-chart
-      type="doughnut"
-      :data="chartData"
-      :options="chartOptions"
-      class="w-full md:w-30rem"
-    />
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { getFirestore, collection, query, orderBy, getDocs } from 'firebase/firestore'
@@ -89,3 +77,49 @@ const setChartOptions = () => {
   }
 }
 </script>
+
+<template>
+  <section class="statistics-container">
+    <header>
+      <h1>Statistics</h1>
+    </header>
+    <div class="card flex justify-content-center">
+      <app-chart
+        type="doughnut"
+        :data="chartData"
+        :options="chartOptions"
+        class="w-full md:w-30rem"
+      />
+    </div>
+  </section>
+</template>
+
+<style scoped>
+.statistics-container {
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  padding: 2rem;
+  margin: 2rem auto;
+}
+.card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+@media (max-width: 900px) {
+  .statistics-container {
+    padding: 1rem;
+  }
+}
+@media (max-width: 600px) {
+  .statistics-container {
+    padding: 0.5rem;
+    margin: 1rem 0;
+  }
+  .card {
+    padding: 0.5rem;
+  }
+}
+</style>

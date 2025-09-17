@@ -90,11 +90,10 @@ onMounted(async () => {
 <template>
   <app-dialog />
   <app-progress v-if="isLoading" />
-  <app-message v-else-if="!isLoading && !interviews.length" severity="info"
-    >There are no interviews</app-message
-  >
-  <div v-else>
-    <h1>Interviews</h1>
+  <section v-else class="list-container">
+    <header>
+      <h1>Interviews</h1>
+    </header>
     <div class="flex align-items-center mb-5">
       <div class="flex align-items-center mr-2">
         <app-radio
@@ -103,7 +102,7 @@ onMounted(async () => {
           value="Refusal"
           v-model="selectedFilterResult"
         />
-        <label for="interviewResult1" class="ml-2">Отказ</label>
+        <label for="interviewResult1" class="ml-2">Refusal</label>
       </div>
       <div class="flex align-items-center mr-2">
         <app-radio
@@ -112,7 +111,7 @@ onMounted(async () => {
           value="Offer"
           v-model="selectedFilterResult"
         />
-        <label for="interviewResult2" class="ml-2">Оффер</label>
+        <label for="interviewResult2" class="ml-2">Offer</label>
       </div>
       <app-button class="mr-2" @click="submitFilter" :disabled="!selectedFilterResult"
         >Применить</app-button
@@ -207,10 +206,17 @@ onMounted(async () => {
         </template>
       </app-column>
     </app-datatable>
-  </div>
+  </section>
 </template>
 
 <style scoped>
+.list-container {
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  padding: 2rem;
+  margin: 2rem auto;
+}
 .contacts {
   display: flex;
   align-items: center;
@@ -231,5 +237,22 @@ onMounted(async () => {
 .interview-stages {
   display: flex;
   gap: 5px;
+}
+@media (max-width: 1100px) {
+  .list-container {
+    padding: 1rem;
+  }
+}
+@media (max-width: 700px) {
+  .list-container {
+    padding: 0.5rem;
+    margin: 1rem 0;
+  }
+  .contacts {
+    gap: 10px;
+  }
+  .interview-stages {
+    gap: 2px;
+  }
 }
 </style>
