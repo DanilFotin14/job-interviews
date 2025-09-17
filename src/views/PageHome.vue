@@ -41,18 +41,18 @@ const handleAddInterview = async () => {
           class="input mb-3"
           placeholder="Direct link to vacancy"
         />
-        <app-input-text v-model="hrName" class="input mb-3" placeholder="Contact HR(Name)" />
+        <app-input-text v-model="hrName" class="input mb-3" placeholder="HR name" />
         <app-input-text
           v-model="contactTelegram"
           class="input mb-3"
-          placeholder="Telegram username HR"
+          placeholder="HR Telegram usernam"
         />
         <app-input-text
           v-model="contactWhatsApp"
           class="input mb-3"
-          placeholder="WhatsApp phone number HR"
+          placeholder="HR WhatsApp phone number"
         />
-        <app-input-text v-model="contactPhone" class="input mb-3" placeholder="Телефон HR" />
+        <app-input-text v-model="contactPhone" class="input mb-3" placeholder="HR phone number" />
         <app-button
           @click="handleAddInterview"
           label="Create interview"
