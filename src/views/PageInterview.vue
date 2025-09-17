@@ -1,68 +1,39 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getFirestore, doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore'
-import { useUserStore } from '@/stores/user'
-import type { IInterview, IStage } from '@/interfaces'
+import { useInterviews } from '@/composables/useInterviews'
+import type { IStage } from '@/interfaces'
 
-const db = getFirestore()
-const userStore = useUserStore()
 const route = useRoute()
+const { interview, isLoading, getInterviewById, saveInterview } = useInterviews()
 
-const isLoading = ref<boolean>(true)
-const interview = ref<IInterview>({} as IInterview)
-
-const docref = doc(db, `users/${userStore.userId}/interviews`, route.params.id as string)
-
-const getData = async (): Promise<void> => {
-  isLoading.value = true
-  const docSnap = await getDoc(docref)
-
-  if (docSnap.exists()) {
-    const data = docSnap.data() as IInterview
-    if (data.stages && data.stages.length) {
-      data.stages = data.stages.map((stage: IStage) => {
-        if (stage.date && stage.date instanceof Timestamp) {
-          return {
-            ...stage,
-            date: stage.date.toDate(),
-          }
-        }
-        return stage
-      })
-    }
-    interview.value = data
+onMounted(async () => {
+  if (route.params.id) {
+    await getInterviewById(route.params.id as string)
   }
-  isLoading.value = false
-}
-
-const saveInterview = async (): Promise<void> => {
-  isLoading.value = true
-  await updateDoc(docref, interview.value)
-  await getData()
-  isLoading.value = false
-}
+})
 
 const addStage = () => {
   if (interview.value) {
     if (!interview.value.stages) {
       interview.value.stages = []
     }
-    interview.value.stages?.push({ name: '', date: null, description: '' } as IStage)
+    interview.value.stages.push({ name: '', date: null, description: '' } as IStage)
   }
 }
 
 const removeStage = (index: number) => {
-  if (interview.value) {
-    if (interview.value.stages) {
-      interview.value.stages.splice(index, 1)
-    }
+  if (interview.value && interview.value.stages) {
+    interview.value.stages.splice(index, 1)
   }
 }
 
-onMounted(async () => await getData())
+const handleSave = async () => {
+  if (interview.value && interview.value.id) {
+    await saveInterview(interview.value.id, interview.value)
+  }
+}
 </script>
-
 <template>
   <app-progress v-if="isLoading" />
   <section v-else-if="interview?.id && !isLoading">
@@ -144,7 +115,7 @@ onMounted(async () => await getData())
           </div>
 
           <app-button
-            @click="addStage()"
+            @click.prevent="addStage()"
             label="Add new"
             severity="info"
             icon="pi pi-plus"
@@ -181,7 +152,7 @@ onMounted(async () => await getData())
                   rows="5"
                 />
                 <app-button
-                  @click="removeStage(index)"
+                  @click.prevent="removeStage(index)"
                   label="Delete stage"
                   severity="danger"
                   class="mb-3"
@@ -209,7 +180,12 @@ onMounted(async () => await getData())
               <label for="interviewResult2" class="ml-2">Job offer</label>
             </div>
             <div>
-              <app-button @click="saveInterview" label="Save" severity="success" class="mb-3" />
+              <app-button
+                @click.prevent="handleSave"
+                label="Save"
+                severity="success"
+                class="mb-3"
+              />
             </div>
           </div>
         </form>

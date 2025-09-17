@@ -1,63 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import {
-  getFirestore,
-  collection,
-  query,
-  orderBy,
-  getDocs,
-  deleteDoc,
-  doc,
-  where,
-} from 'firebase/firestore'
-import { useUserStore } from '@/stores/user'
-import type { IInterview } from '@/interfaces'
+import { onMounted } from 'vue'
+import { useInterviews } from '@/composables/useInterviews'
 import { useConfirm } from 'primevue/useconfirm'
 
-const userStore = useUserStore()
-const db = getFirestore()
 const confirm = useConfirm()
+const {
+  interviews,
+  isLoading,
+  selectedFilterResult,
+  submitFilter,
+  clearFilter,
+  removeInterview,
+  getAllInterviews,
+} = useInterviews()
 
-const interviews = ref<IInterview[]>([])
-const isLoading = ref<boolean>(true)
-const selectedFilterResult = ref<string>('')
+onMounted(async () => {
+  interviews.value = await getAllInterviews()
+})
 
-const submitFilter = async (): Promise<void> => {
-  isLoading.value = true
-  const listInterviews: Array<IInterview> = await getAllInterviews(true)
-  interviews.value = listInterviews
-  isLoading.value = false
-}
-
-const clearFilter = async (): Promise<void> => {
-  isLoading.value = true
-  const listInterviews: Array<IInterview> = await getAllInterviews()
-  interviews.value = listInterviews
-  isLoading.value = false
-}
-
-const getAllInterviews = async <T extends IInterview>(isFilter?: boolean): Promise<T[]> => {
-  let getData
-
-  if (isFilter) {
-    getData = query(
-      collection(db, `users/${userStore.userId}/interviews`),
-      orderBy('createdAt', 'desc'),
-      where('result', '==', selectedFilterResult.value),
-    )
-  } else {
-    getData = query(
-      collection(db, `users/${userStore.userId}/interviews`),
-      orderBy('createdAt', 'desc'),
-    )
-  }
-
-  const listDocs = await getDocs(getData)
-
-  return listDocs.docs.map((doc) => doc.data() as T)
-}
-
-const confirmRemoveInterview = async (id: string): Promise<void> => {
+const confirmRemoveInterview = async (id: string) => {
   confirm.require({
     message: 'Do you want to delete this interview?',
     header: 'Interview deletion',
@@ -67,24 +28,10 @@ const confirmRemoveInterview = async (id: string): Promise<void> => {
     rejectClass: 'p-button-secondary p-button-outlined',
     acceptClass: 'p-button-danger',
     accept: async () => {
-      isLoading.value = true
-      await deleteDoc(doc(db, `users/${userStore.userId}/interviews`, id))
-
-      const listInterviews: Array<IInterview> = await getAllInterviews()
-      interviews.value = [...listInterviews]
-
-      isLoading.value = false
+      await removeInterview(id)
     },
   })
 }
-
-onMounted(async () => {
-  const listInterviews: Array<IInterview> = await getAllInterviews()
-
-  interviews.value = listInterviews
-
-  isLoading.value = false
-})
 </script>
 
 <template>
@@ -200,7 +147,7 @@ onMounted(async () => {
             <app-button
               icon="pi pi-trash"
               severity="danger"
-              @click="confirmRemoveInterview(slotProps.data.id)"
+              @click="() => confirmRemoveInterview(slotProps.data.id)"
             />
           </div>
         </template>

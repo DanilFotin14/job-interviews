@@ -1,49 +1,34 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { getFirestore, setDoc, doc } from 'firebase/firestore'
-import type { IInterview } from '@/interfaces'
-import { v4 as uuidv4 } from 'uuid'
-import { useUserStore } from '@/stores/user'
+import { useInterviews } from '@/composables/useInterviews'
 
-const userStore = useUserStore()
-const db = getFirestore()
-const router = useRouter()
+const company = ref('')
+const vacancyLink = ref('')
+const hrName = ref('')
+const contactTelegram = ref('')
+const contactWhatsApp = ref('')
+const contactPhone = ref('')
 
-const company = ref<string>('')
-const vacancyLink = ref<string>('')
-const hrName = ref<string>('')
-const contactTelegram = ref<string>('')
-const contactWhatsApp = ref<string>('')
-const contactPhone = ref<string>('')
+const { addNewInterview, isLoading } = useInterviews()
 
-const loading = ref<boolean>(false)
+const disabledSaveButton = computed(() => {
+  return !company.value || !vacancyLink.value || !hrName.value
+})
 
-const addNewInterview = async (): Promise<void> => {
-  loading.value = true
-  console.log('addNewInterview')
-  const payload: IInterview = {
-    id: uuidv4(),
+const handleAddInterview = async () => {
+  await addNewInterview({
     company: company.value,
     vacancyLink: vacancyLink.value,
     hrName: hrName.value,
     contactTelegram: contactTelegram.value,
     contactWhatsApp: contactWhatsApp.value,
     contactPhone: contactPhone.value,
-    createdAt: new Date(),
+    stages: [],
+    salaryFrom: undefined,
+    salaryTo: undefined,
     result: 'Refusal',
-  }
-
-  if (userStore.userId) {
-    await setDoc(doc(db, `users/${userStore.userId}/interviews`, payload.id), payload).then(() => {
-      router.push('/list')
-    })
-  }
+  })
 }
-
-const disabledSaveButton = computed<boolean>(() => {
-  return !company.value || !vacancyLink.value || !hrName.value
-})
 </script>
 <template>
   <section class="content-interview">
@@ -69,10 +54,10 @@ const disabledSaveButton = computed<boolean>(() => {
         />
         <app-input-text v-model="contactPhone" class="input mb-3" placeholder="Телефон HR" />
         <app-button
-          @click="addNewInterview"
+          @click="handleAddInterview"
           label="Create interview"
           :disabled="disabledSaveButton"
-          :loading="loading"
+          :loading="isLoading"
         ></app-button>
       </template>
     </app-card>
