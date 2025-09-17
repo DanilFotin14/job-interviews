@@ -79,11 +79,16 @@ const submitForm = (): void => {
   <section class="flex justify-content-center mt-5">
     <div class="surface-card p-4 shadow-2 border-round w-full lg:w-6">
       <header class="text-center mb-3">
-        <div class="text-900 text-3xl font-medium mb-3">Hello!</div>
+        <h1 class="text-900 text-3xl font-medium mb-3">Hello!</h1>
         <span class="text-600 font-medium line-height-3">{{ subtitleText }}</span>
         <a class="font-medium no-underline ml-2 text-blue-500 cursor-pointer" @click="toggleAuth">
           {{ linkAccountText }}
         </a>
+        <span class="hint"
+          >You can use account for sign in<b class="mt-1"
+            >Email: test@mail.com Password: 123456</b
+          ></span
+        >
       </header>
       <form @submit.prevent="submitForm" class="auth-form">
         <label for="email1" class="block text-900 font-medium mb-2">Email</label>
@@ -130,5 +135,11 @@ const submitForm = (): void => {
   .auth-form label {
     font-size: 0.95rem;
   }
+}
+
+.hint {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 </style>
